@@ -1,9 +1,3 @@
-import { neo4jgraphql } from 'neo4j-graphql-js';
-
-export const typeDefs = `
-# Neo4j GraphQL JS doesn't support @unique. Instead we add an ID to each node.
-# This has to be copied from ../00_datamodel/schema.graphql
-
 type Squad {
     squadID: ID!
     name: String!
@@ -14,6 +8,7 @@ type Squad {
     members: [SquadMembers]
     badges: [Badge] @relation(name:"ACHIEVED", direction:OUT)
     tags: [Tag] @relation(name:"TAGGED_AS", direction:OUT)
+    locations: [Location] @relation(name:"HAS_MEMBERS_IN", direction:OUT)
 }
 
 type Focus {
@@ -31,12 +26,14 @@ type Person {
     lastName: String!
     email: String!
     phone: String
+    location: Location @relation(name:"BASED_IN", direction:OUT)
     chapter: Chapter @relation(name:"PART_OF", direction:OUT)
     isChapterLead: Boolean
     skills:[Skill] @relation(name:"SKILLED_AT", direction:OUT)
     tplOf:[Squad]
     productOwnerOf: [SquadPO]
     memberOf: [SquadMembers]
+    totalAllocation: Float @cypher(statement:"MATCH (this)-[m:MEMBER_OF]->(:Squad) RETURN SUM(m.allocation)")
     badges:[Badge] @relation(name:"WAS_AWARDED", direction:OUT)
 }
 
@@ -69,6 +66,13 @@ type Tag {
     squads: [Squad] @relation(name:"TAGGED_AS", direction:IN)
 }
 
+type Location {
+    city: String!
+    country: String!
+    people: [Person] @relation(name:"BASED_IN", direction:IN)
+    squads: [Squad] @relation(name:"HAS_MEMBERS_IN", direction:IN)
+}
+
 type SquadTPL @relation(name:"TPL_OF") {
     from: Person
     to: Squad
@@ -93,4 +97,4 @@ type SquadMembers @relation(name:"MEMBER_OF") {
     active: Boolean
     startDate: DateTime
     endDate: DateTime
-}`;
+}

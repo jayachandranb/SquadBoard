@@ -38,6 +38,7 @@ The present version cannot be even called an alpha. In fact it took some courage
 - [ ] Better Documentation
 - [x] Dockerise Neo4j
 - [x] Neo4j docker-compose
+- [x] Datamodel to be made point of truth
 - [ ] Test Data generation via Curl to API
 - [ ] Custom Resolvers to be added based on the workflow.
 - [ ] Dockerise the API

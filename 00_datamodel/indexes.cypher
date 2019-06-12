@@ -9,3 +9,4 @@ CREATE INDEX ON :Person(lastName);
 // CREATE INDEX ON :Skill(expertise);
 // CREATE INDEX ON :Badge(name);
 // CREATE INDEX ON :Tag(label);
+CREATE INDEX ON :Location(city, country)

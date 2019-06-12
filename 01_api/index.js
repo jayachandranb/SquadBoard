@@ -1,8 +1,13 @@
 import { makeAugmentedSchema } from 'neo4j-graphql-js';
 import { ApolloServer } from 'apollo-server';
 import { v1 as neo4j } from 'neo4j-driver';
-import { typeDefs } from './tribemaster-schema';
+import dotenv from "dotenv";
+import fs from "fs";
 
+// set environment variables from ../.env
+dotenv.config();
+
+const typeDefs = fs.readFileSync("model/schema.graphql", "utf8").toString();
 const schema = makeAugmentedSchema({ typeDefs });
 
 const driver = neo4j.driver(

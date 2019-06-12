@@ -8,6 +8,7 @@ CREATE CONSTRAINT ON (c:Chapter) ASSERT c.name IS UNIQUE;
 CREATE CONSTRAINT ON (sk:Skill) ASSERT sk.expertise IS UNIQUE;
 CREATE CONSTRAINT ON (b:Badge) ASSERT b.name IS UNIQUE;
 CREATE CONSTRAINT ON (t:Tag) ASSERT t.label IS UNIQUE;
+CREATE CONSTRAINT ON (l:Location) ASSERT (l.city) IS UNIQUE;
 
 // Node Properties Must exist (Requires Enterprise)
 // CREATE CONSTRAINT ON (sq:Squad) ASSERT exists(sq.name);

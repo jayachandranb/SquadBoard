@@ -16,6 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^2.6.2",
+    "dotenv": "^8.0.0",
+    "fs": "0.0.1-security",
     "neo4j-driver": "^1.7.5",
     "neo4j-graphql-js": "^2.6.3"
   },

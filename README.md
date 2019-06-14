@@ -45,4 +45,5 @@ The present version cannot be even called an alpha. In fact it took some courage
 - [ ] Include the API in the deployment docker-compose
 - [ ] Openshift deployment specification from docker-compose
 - [ ] Better password management than hardcoded values (note to self: https://www.vaultproject.io/ looks promising)
+- [ ] Support API versions
 - [ ] Add more items to this list

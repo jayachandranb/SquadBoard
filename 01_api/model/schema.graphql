@@ -1,3 +1,5 @@
+# Types and Enums Start
+
 type Squad {
     squadID: ID!
     name: String!
@@ -9,6 +11,8 @@ type Squad {
     badges: [Badge] @relation(name:"ACHIEVED", direction:OUT)
     tags: [Tag] @relation(name:"TAGGED_AS", direction:OUT)
     locations: [Location] @relation(name:"HAS_MEMBERS_IN", direction:OUT)
+    stories: [Story] @relation(name:"WORKING_ON", direction:OUT)
+    policies: [SquadPolicy]
 }
 
 type Focus {
@@ -35,6 +39,8 @@ type Person {
     memberOf: [SquadMembers]
     totalAllocation: Float @cypher(statement:"MATCH (this)-[m:MEMBER_OF]->(:Squad) RETURN SUM(m.allocation)")
     badges:[Badge] @relation(name:"WAS_AWARDED", direction:OUT)
+    organisation: Organisation @relation(name:"EMPLOYEE_OF", direction:OUT)
+    codeMetric: [PersonCodeMetric]
 }
 
 type Chapter {
@@ -73,6 +79,79 @@ type Location {
     squads: [Squad] @relation(name:"HAS_MEMBERS_IN", direction:IN)
 }
 
+type Organisation {
+    organisationID: ID!
+    shortName: String!
+    name: String!
+    employees: [Person] @relation(name:"EMPLOYEE_OF", direction:IN)
+}
+
+type ProgramIncrement {
+    piID: ID!
+    piNumber: String!
+    isCurrent: Boolean!
+    startDate: DateTime!
+    endDate: DateTime
+    numberOfSprints: Int
+    epics: [Epic] @relation(name:"SCHEDULED_FOR", direction:IN)
+}
+
+type Epic {
+    epicID: ID!
+    jiraID: String!
+    status: Status!
+    programIncrement: ProgramIncrement @relation(name:"SCHEDULED_FOR", direction:OUT)
+    stories: [Story] @relation(name:"FULFILLS", direction:IN)
+}
+
+type Story {
+    storyID: ID!
+    jiraID: String!
+    status: Status!
+    epic: Epic @relation(name:"FULFILLS", direction:OUT)
+    squad: Squad @relation(name:"WORKING_ON", direction:IN)
+}
+
+enum Status {
+    INPROGRESS
+    COMPLETED
+    BACKLOG
+}
+
+type Policy {
+    policyID: ID!
+    name: String!
+    type: PolicyType!
+    version: String
+    description: String
+    priority: Int
+    squads: [SquadPolicy]
+}
+
+enum PolicyType {
+    HYGIENE
+    JIRAMATURITY
+}
+
+type CodeMetric {
+    metricID: ID!
+    name: String!
+    type: CodeMetricType!
+    version: String
+    description: String
+}
+
+enum CodeMetricType {
+    OVERALL
+    IMPACT
+    EFFICIENCY
+    CHURN
+}
+
+# Types and Enums End
+
+# Relationships Start
+
 type SquadTPL @relation(name:"TPL_OF") {
     from: Person
     to: Squad
@@ -98,3 +177,35 @@ type SquadMembers @relation(name:"MEMBER_OF") {
     startDate: DateTime
     endDate: DateTime
 }
+
+type SquadPolicy @relation(name:"LINKED_TO") {
+    from: Squad
+    to: Policy
+    pi: ProgramIncrement
+    measure: Float
+    average: Float
+    mean: Float
+    median: Float
+    standardDeviation: Float
+    x: [Float]
+    y: [Float]
+    z: [Float]
+    time: [DateTime]
+}
+
+type PersonCodeMetric @relation(name:"ENGINEERING_AT"){
+    from: Person 
+    to: CodeMetric
+    pi: Int
+    measure: Float
+    average: Float
+    mean: Float
+    median: Float
+    standardDeviation: Float
+    x: [Float]
+    y: [Float]
+    z: [Float]
+    time: [DateTime]
+}
+
+# Relationships End

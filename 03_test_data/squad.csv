@@ -1,0 +1,11 @@
+﻿squadID,name,mission,focusID,health
+f8c7d5fe-9384-439c-8891-4c40361687e6,SquadOne,Mission One,60bae18b-3803-4f06-ab75-f686521e28a8,0.8
+e90466cd-1463-417f-8242-f6070f097de2,SquadTwo,Mission Two,cd150409-95fd-409d-be56-6c2a24005f5a,0.75
+ceb41caa-7e8d-4bea-8fd1-f07d47fffae7,SquadThree,Mission Three,1d4ef9d3-338b-44fd-80bf-034d2a42bf70,0.75
+77980081-2601-4347-b338-ac848766cf46,SquadFour,Mission Four,60bae18b-3803-4f06-ab75-f686521e28a8,0.8
+55bfc995-8d25-4cba-8ea2-294dc6eaeb62,SquadFive,Mission Five,cd150409-95fd-409d-be56-6c2a24005f5a,0.4
+510fa1bc-4e9d-4980-a7ae-c79bb483521e,SquadSix,Mission Six,1d4ef9d3-338b-44fd-80bf-034d2a42bf70,0.2
+e08f2153-c716-4d7c-949d-d96ce9f53333,SquadSeven,Mission Seven,60bae18b-3803-4f06-ab75-f686521e28a8,0.9
+fb7e72b9-c896-45fe-af28-24a343a505e5,SquadEight,Mission Eight,cd150409-95fd-409d-be56-6c2a24005f5a,0.35
+e3899511-328d-4aac-a19f-bab14b2e2aaa,SquadNine,Mission Nine,1d4ef9d3-338b-44fd-80bf-034d2a42bf70,0.9
+0b718814-df00-4feb-bc64-a5630ee2d294,SquadTen,Mission Ten,60bae18b-3803-4f06-ab75-f686521e28a8,1.0

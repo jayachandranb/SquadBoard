@@ -39,11 +39,12 @@ The present version cannot be even called an alpha. In fact it took some courage
 - [x] Dockerise Neo4j
 - [x] Neo4j docker-compose
 - [x] Datamodel to be made point of truth
-- [ ] Test Data generation via Curl to API
 - [ ] Custom Resolvers to be added based on the workflow.
-- [ ] Dockerise the API
-- [ ] Include the API in the deployment docker-compose
+- [x] Dockerise the API
+- [x] Include the API in the deployment docker-compose
 - [ ] Openshift deployment specification from docker-compose
 - [ ] Better password management than hardcoded values (note to self: https://www.vaultproject.io/ looks promising)
 - [ ] Support API versions
+- [ ] DB dump and import of test data
+- [ ] Index & Constraints creation via script
 - [ ] Add more items to this list

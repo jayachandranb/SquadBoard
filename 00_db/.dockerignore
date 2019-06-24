@@ -80,5 +80,7 @@ Backup[ ]of[ ]*.numbers/
 !.vscode/launch.json
 !.vscode/extensions.json
 
-02_lab
-02_lab/
+*.cypher
+*.graphql
+*.xls
+*.xlsx

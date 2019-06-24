@@ -1,5 +1,13 @@
 FROM neo4j:latest
 
+USER root
+
+RUN apt-get update -y && \
+    apt-get install wget && \
+    rm -rf /var/lib/apt/lists/*
+
+USER neo4j
+
 ENV NEO4J_AUTH=neo4j/letmein
 
 ENV APOC_VERSION 3.5.0.4
@@ -10,7 +18,7 @@ ENV GRAPH_ALGO_VERSION 3.5.4.0
 ENV GRAPH_ALGO_URI https://github.com/neo4j-contrib/neo4j-graph-algorithms/releases/download/${GRAPH_ALGO_VERSION}/graph-algorithms-algo-${GRAPH_ALGO_VERSION}.jar
 RUN wget -P /var/lib/neo4j/plugins ${GRAPH_ALGO_URI}
 
-ENV GRAPHQL_VERSION 3.5.0.3
+ENV GRAPHQL_VERSION 3.5.0.4
 ENV GRAPHQL_URI https://github.com/neo4j-graphql/neo4j-graphql/releases/download/${GRAPHQL_VERSION}/neo4j-graphql-${GRAPHQL_VERSION}.jar
 RUN wget -P /var/lib/neo4j/plugins ${GRAPHQL_URI}
 

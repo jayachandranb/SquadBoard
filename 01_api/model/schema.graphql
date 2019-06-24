@@ -7,12 +7,12 @@ type Squad {
     focus: Focus @relation(name:"FOCUSSED_ON", direction:OUT)
     tpl: SquadTPL
     po: SquadPO
+    health: Float
     members: [SquadMembers]
     badges: [Badge] @relation(name:"ACHIEVED", direction:OUT)
     tags: [Tag] @relation(name:"TAGGED_AS", direction:OUT)
-    locations: [Location] @relation(name:"HAS_MEMBERS_IN", direction:OUT)
+    locations: [Location] @cypher(statement:"MATCH (this)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(l:Location) RETURN l")
     stories: [Story] @relation(name:"WORKING_ON", direction:OUT)
-    policies: [SquadPolicy]
 }
 
 type Focus {
@@ -34,13 +34,13 @@ type Person {
     chapter: Chapter @relation(name:"PART_OF", direction:OUT)
     isChapterLead: Boolean
     skills:[Skill] @relation(name:"SKILLED_AT", direction:OUT)
-    tplOf:[Squad]
-    productOwnerOf: [SquadPO]
+    tplOf:[SquadTPL]
     memberOf: [SquadMembers]
+    productOwnerOf: [SquadPO]
     totalAllocation: Float @cypher(statement:"MATCH (this)-[m:MEMBER_OF]->(:Squad) RETURN SUM(m.allocation)")
     badges:[Badge] @relation(name:"WAS_AWARDED", direction:OUT)
     organisation: Organisation @relation(name:"EMPLOYEE_OF", direction:OUT)
-    codeMetric: [PersonCodeMetric]
+    commits: [Commit] @relation(name:"PERFORMED", direction:OUT)
 }
 
 type Chapter {
@@ -76,7 +76,7 @@ type Location {
     city: String!
     country: String!
     people: [Person] @relation(name:"BASED_IN", direction:IN)
-    squads: [Squad] @relation(name:"HAS_MEMBERS_IN", direction:IN)
+    squads: [Squad] @cypher(statement:"MATCH (s:Squad)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(this) RETURN s")
 }
 
 type Organisation {
@@ -86,14 +86,23 @@ type Organisation {
     employees: [Person] @relation(name:"EMPLOYEE_OF", direction:IN)
 }
 
+# Jira
+
 type ProgramIncrement {
     piID: ID!
     piNumber: String!
     isCurrent: Boolean!
-    startDate: DateTime!
-    endDate: DateTime
+    startDate: Date!
+    endDate: Date
     numberOfSprints: Int
     epics: [Epic] @relation(name:"SCHEDULED_FOR", direction:IN)
+}
+
+type Feature {
+    featureID: ID!
+    jiraID: String!
+    status: Status!
+    epics: [Epic] @relation(name:"TOWARDS", direction:IN)
 }
 
 type Epic {
@@ -101,6 +110,7 @@ type Epic {
     jiraID: String!
     status: Status!
     programIncrement: ProgramIncrement @relation(name:"SCHEDULED_FOR", direction:OUT)
+    feature: Feature @relation(name:"TOWARDS", direction:OUT)
     stories: [Story] @relation(name:"FULFILLS", direction:IN)
 }
 
@@ -116,36 +126,57 @@ enum Status {
     INPROGRESS
     COMPLETED
     BACKLOG
+    OTHER
 }
 
-type Policy {
-    policyID: ID!
-    name: String!
-    type: PolicyType!
-    version: String
-    description: String
-    priority: Int
-    squads: [SquadPolicy]
+# git
+
+type Repository {
+    repoID: ID!
+    repoTool: RepoTool!
+    sdcpID: String!
+    repoURL: String!
+    branches: [Branch] @relation(name:"BRANCH_OF", direction:IN)
 }
 
-enum PolicyType {
-    HYGIENE
-    JIRAMATURITY
+enum RepoTool {
+    GITHUB
+    BITBUCKET
 }
 
-type CodeMetric {
-    metricID: ID!
-    name: String!
-    type: CodeMetricType!
-    version: String
-    description: String
+type Branch {
+    branchID: ID!
+    sdcpBranchID: String!
+    branchType: BranchType!
+    repository: Repository! @relation(name:"BRANCH_OF", direction:OUT)
+    commits: [Commit] @relation(name:"COMMIT_TO", direction:IN)
 }
 
-enum CodeMetricType {
-    OVERALL
-    IMPACT
-    EFFICIENCY
-    CHURN
+enum BranchType {
+    MASTER
+    DEVELOP
+    RELEASE
+    FEATURE
+    HOTFIX
+    BUGFIX
+    OTHER
+}
+
+type Commit {
+    commitID: ID!
+    sdcpCommitID: String!
+    commitTime: DateTime!
+    author: Person! @relation(name:"PERFORMED", direction:IN)
+    branch: Branch! @relation(name:"COMMIT_TO", direction:OUT)
+}
+
+type PullRequest {
+    prID: ID!
+    scdpPRID: String!
+    author: Person @relation(name:"REQUESTED", direction:IN)
+    fromBranch: Branch @relation(name:"CHANGES_FROM", direction: OUT)
+    toBranch: Branch @relation(name:"MERGE_TO", direction:OUT)
+    repo: Repository @cypher(statement:"MATCH (r:Repository)<-[:BRANCH_OF]-(:Branch)<-[:CHANGES_FROM]-(this) RETURN r")
 }
 
 # Types and Enums End
@@ -156,16 +187,16 @@ type SquadTPL @relation(name:"TPL_OF") {
     from: Person
     to: Squad
     active: Boolean
-    startDate: DateTime
-    endDate: DateTime
+    startDate: Date
+    endDate: Date
 }
 
 type SquadPO @relation(name:"PO_OF") {
     from: Person
     to: Squad
     active: Boolean
-    startDate: DateTime
-    endDate: DateTime
+    startDate: Date
+    endDate: Date
 }
 
 type SquadMembers @relation(name:"MEMBER_OF") {
@@ -174,38 +205,8 @@ type SquadMembers @relation(name:"MEMBER_OF") {
     roles: [String]
     allocation: Float!
     active: Boolean
-    startDate: DateTime
-    endDate: DateTime
-}
-
-type SquadPolicy @relation(name:"LINKED_TO") {
-    from: Squad
-    to: Policy
-    pi: ProgramIncrement
-    measure: Float
-    average: Float
-    mean: Float
-    median: Float
-    standardDeviation: Float
-    x: [Float]
-    y: [Float]
-    z: [Float]
-    time: [DateTime]
-}
-
-type PersonCodeMetric @relation(name:"ENGINEERING_AT"){
-    from: Person 
-    to: CodeMetric
-    pi: Int
-    measure: Float
-    average: Float
-    mean: Float
-    median: Float
-    standardDeviation: Float
-    x: [Float]
-    y: [Float]
-    z: [Float]
-    time: [DateTime]
+    startDate: Date
+    endDate: Date
 }
 
 # Relationships End

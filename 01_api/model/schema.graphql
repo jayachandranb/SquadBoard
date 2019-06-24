@@ -11,7 +11,7 @@ type Squad {
     members: [SquadMembers]
     badges: [Badge] @relation(name:"ACHIEVED", direction:OUT)
     tags: [Tag] @relation(name:"TAGGED_AS", direction:OUT)
-    locations: [Location] @cypher(statement:"MATCH (this)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(l:Location) RETURN l")
+    locations: [Location] @cypher(statement:"MATCH (this)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(l:Location) RETURN DISTINCT l")
     stories: [Story] @relation(name:"WORKING_ON", direction:OUT)
 }
 
@@ -76,7 +76,7 @@ type Location {
     city: String!
     country: String!
     people: [Person] @relation(name:"BASED_IN", direction:IN)
-    squads: [Squad] @cypher(statement:"MATCH (s:Squad)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(this) RETURN s")
+    squads: [Squad] @cypher(statement:"MATCH (s:Squad)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(this) RETURN DISTINCT s")
 }
 
 type Organisation {
@@ -176,7 +176,7 @@ type PullRequest {
     author: Person @relation(name:"REQUESTED", direction:IN)
     fromBranch: Branch @relation(name:"CHANGES_FROM", direction: OUT)
     toBranch: Branch @relation(name:"MERGE_TO", direction:OUT)
-    repo: Repository @cypher(statement:"MATCH (r:Repository)<-[:BRANCH_OF]-(:Branch)<-[:CHANGES_FROM]-(this) RETURN r")
+    repo: Repository @cypher(statement:"MATCH (r:Repository)<-[:BRANCH_OF]-(:Branch)<-[:CHANGES_FROM]-(this) RETURN DISTINCT r")
 }
 
 # Types and Enums End

@@ -1,35 +1,47 @@
 # Instructions
 
-## Bring up neo4j locally
+## Bring up neo4j and API locally
 
 ```
-cd 99_deployment
 docker-compose up --build -d
 ```
 
 Neo4j browser will be available at http://localhost:7474/browser/
+API Playground will be available at http://localhost:3000
 
-## Bring up graphql API locally
 
-```
-cd 01_api
-npm install -y
-npm start
-```
-
-## Bring down neo4j
+## Bring down neo4j and API
 
 ```
-cd 99_deployment
 docker-compose down
 docker-compose down -v (If you are ready to loose data / you want to clear data)
 ```
 
-## Bring down graphql API
+## Data Prep
 
+### Add Constraints and Indexes
+
+In Neo4j browser paste contents of 00_db/constraints.cypher and 00_db/indexes.cypher and execute them.
+
+### Add Test Data (Optional / Only for Unit Testing)
+
+Make sure neo4j and API containers are running.
 ```
-^C
+cd 03_test_data && \
+   docker cp squad.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp focus.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp person.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp chapter.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp location.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp organisation.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp skill.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp squad_tpl.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp squad_po.csv squadboard_db_1:/var/lib/neo4j/import/ && \
+   docker cp squad_members.csv squadboard_db_1:/var/lib/neo4j/import/
 ```
+
+In Neo4j browser paste contents of 03_test_data/load_data.cypher and execute it.
+
 
 # TODO
 

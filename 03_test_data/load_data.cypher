@@ -1,14 +1,3 @@
-docker cp squad.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp focus.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp person.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp chapter.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp location.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp organisation.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp skill.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp squad_tpl.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp squad_po.csv squadboard_db_1:/var/lib/neo4j/import/ && \
-docker cp squad_members.csv squadboard_db_1:/var/lib/neo4j/import/
-
 LOAD CSV WITH HEADERS FROM 'file:///squad.csv' AS row
 CREATE (sq:Squad)
 SET sq=row, sq.health=toFloat(row.health);

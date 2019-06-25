@@ -90,12 +90,22 @@ type Organisation {
 
 type ProgramIncrement {
     piID: ID!
-    piNumber: String!
+    piNumber: Int!
     isCurrent: Boolean!
     startDate: Date!
     endDate: Date
-    numberOfSprints: Int
+    sprints: [Sprint]
     epics: [Epic] @relation(name:"SCHEDULED_FOR", direction:IN)
+}
+
+type Sprint {
+    sprintID: ID!
+    sprintNumber: Int!
+    isCurrent: Boolean!
+    startDate: Date!
+    endDate: Date
+    programIncrement: ProgramIncrement!
+    stories: [Story]
 }
 
 type Feature {
@@ -118,6 +128,7 @@ type Story {
     storyID: ID!
     jiraID: String!
     status: Status!
+    sprint: Sprint
     epic: Epic @relation(name:"FULFILLS", direction:OUT)
     squad: Squad @relation(name:"WORKING_ON", direction:IN)
 }
@@ -131,53 +142,53 @@ enum Status {
 
 # git
 
-type Repository {
-    repoID: ID!
-    repoTool: RepoTool!
-    sdcpID: String!
-    repoURL: String!
-    branches: [Branch] @relation(name:"BRANCH_OF", direction:IN)
-}
+# type Repository {
+#     repoID: ID!
+#     repoTool: RepoTool!
+#     sdcpID: String!
+#     repoURL: String!
+#     branches: [Branch] @relation(name:"BRANCH_OF", direction:IN)
+# }
 
-enum RepoTool {
-    GITHUB
-    BITBUCKET
-}
+# enum RepoTool {
+#     GITHUB
+#     BITBUCKET
+# }
 
-type Branch {
-    branchID: ID!
-    sdcpBranchID: String!
-    branchType: BranchType!
-    repository: Repository! @relation(name:"BRANCH_OF", direction:OUT)
-    commits: [Commit] @relation(name:"COMMIT_TO", direction:IN)
-}
+# type Branch {
+#     branchID: ID!
+#     sdcpBranchID: String!
+#     branchType: BranchType!
+#     repository: Repository! @relation(name:"BRANCH_OF", direction:OUT)
+#     commits: [Commit] @relation(name:"COMMIT_TO", direction:IN)
+# }
 
-enum BranchType {
-    MASTER
-    DEVELOP
-    RELEASE
-    FEATURE
-    HOTFIX
-    BUGFIX
-    OTHER
-}
+# enum BranchType {
+#     MASTER
+#     DEVELOP
+#     RELEASE
+#     FEATURE
+#     HOTFIX
+#     BUGFIX
+#     OTHER
+# }
 
-type Commit {
-    commitID: ID!
-    sdcpCommitID: String!
-    commitTime: DateTime!
-    author: Person! @relation(name:"PERFORMED", direction:IN)
-    branch: Branch! @relation(name:"COMMIT_TO", direction:OUT)
-}
+# type Commit {
+#     commitID: ID!
+#     sdcpCommitID: String!
+#     commitTime: DateTime!
+#     author: Person! @relation(name:"PERFORMED", direction:IN)
+#     branch: Branch! @relation(name:"COMMIT_TO", direction:OUT)
+# }
 
-type PullRequest {
-    prID: ID!
-    scdpPRID: String!
-    author: Person @relation(name:"REQUESTED", direction:IN)
-    fromBranch: Branch @relation(name:"CHANGES_FROM", direction: OUT)
-    toBranch: Branch @relation(name:"MERGE_TO", direction:OUT)
-    repo: Repository @cypher(statement:"MATCH (r:Repository)<-[:BRANCH_OF]-(:Branch)<-[:CHANGES_FROM]-(this) RETURN DISTINCT r")
-}
+# type PullRequest {
+#     prID: ID!
+#     scdpPRID: String!
+#     author: Person @relation(name:"REQUESTED", direction:IN)
+#     fromBranch: Branch @relation(name:"CHANGES_FROM", direction: OUT)
+#     toBranch: Branch @relation(name:"MERGE_TO", direction:OUT)
+#     repo: Repository @cypher(statement:"MATCH (r:Repository)<-[:BRANCH_OF]-(:Branch)<-[:CHANGES_FROM]-(this) RETURN DISTINCT r")
+# }
 
 # Types and Enums End
 

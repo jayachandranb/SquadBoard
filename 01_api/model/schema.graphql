@@ -12,7 +12,7 @@ type Squad {
     badges: [Badge] @relation(name:"ACHIEVED", direction:OUT)
     tags: [Tag] @relation(name:"TAGGED_AS", direction:OUT)
     locations: [Location] @cypher(statement:"MATCH (this)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(l:Location) RETURN DISTINCT l")
-    stories: [Story] @relation(name:"WORKING_ON", direction:OUT)
+    stories: [Story] @relation(name:"ASSIGED_TO", direction:IN)
 }
 
 type Focus {
@@ -38,9 +38,9 @@ type Person {
     memberOf: [SquadMembers]
     productOwnerOf: [SquadPO]
     totalAllocation: Float @cypher(statement:"MATCH (this)-[m:MEMBER_OF]->(:Squad) RETURN SUM(m.allocation)")
-    badges:[Badge] @relation(name:"WAS_AWARDED", direction:OUT)
+    badges:[Badge] @relation(name:"ACHIEVED", direction:OUT)
     organisation: Organisation @relation(name:"EMPLOYEE_OF", direction:OUT)
-    commits: [Commit] @relation(name:"PERFORMED", direction:OUT)
+    # commits: [Commit] @relation(name:"PERFORMED", direction:OUT)
 }
 
 type Chapter {
@@ -63,7 +63,7 @@ type Badge {
     version: String
     description: String
     squads: [Squad] @relation(name:"ACHIEVED", direction:IN)
-    people: [Person] @relation(name:"WAS_AWARDED", direction:IN)
+    people: [Person] @relation(name:"ACHIEVED", direction:IN)
 }
 
 type Tag {
@@ -73,6 +73,7 @@ type Tag {
 }
 
 type Location {
+    locationID: ID!
     city: String!
     country: String!
     people: [Person] @relation(name:"BASED_IN", direction:IN)
@@ -94,8 +95,10 @@ type ProgramIncrement {
     isCurrent: Boolean!
     startDate: Date!
     endDate: Date
-    sprints: [Sprint]
-    epics: [Epic] @relation(name:"SCHEDULED_FOR", direction:IN)
+    sprints: [Sprint] @relation(name:"TOWARDS", direction:IN)
+    scheduledEpics: [Epic] @relation(name:"SCHEDULED_FOR", direction:IN)
+    executedEpics: [Epic] @relation(name:"EXECUTED_IN", direction:IN)
+
 }
 
 type Sprint {
@@ -104,33 +107,38 @@ type Sprint {
     isCurrent: Boolean!
     startDate: Date!
     endDate: Date
-    programIncrement: ProgramIncrement!
-    stories: [Story]
+    programIncrement: ProgramIncrement! @relation(name:"TOWARDS", direction:ON)
+    scheduledStories: [Story] @relation(name:"SCHEDULED_FOR", direction:IN)
+    executedStories: [Story] @relation(name:"EXECUTED_IN", direction:IN)
 }
 
 type Feature {
     featureID: ID!
     jiraID: String!
     status: Status!
-    epics: [Epic] @relation(name:"TOWARDS", direction:IN)
+    epics: [Epic] @relation(name:"FULFILLS", direction:IN)
 }
 
 type Epic {
     epicID: ID!
     jiraID: String!
     status: Status!
-    programIncrement: ProgramIncrement @relation(name:"SCHEDULED_FOR", direction:OUT)
-    feature: Feature @relation(name:"TOWARDS", direction:OUT)
+    scheduledPI: ProgramIncrement @relation(name:"SCHEDULED_FOR", direction:OUT)
+    executedPI: ProgramIncrement @relation(name:"EXECUTED_IN", direction:OUT)
+    feature: Feature @relation(name:"FULFILLS", direction:OUT)
     stories: [Story] @relation(name:"FULFILLS", direction:IN)
+    dependedOn: [Epic] @relation(name:"DEPENDED_ON", direction:OUT)
+    dependedBy: [Epic] @relation(name:"DEPENDED_ON", direction:IN)
 }
 
 type Story {
     storyID: ID!
     jiraID: String!
     status: Status!
-    sprint: Sprint
+    scheduledSprint: Sprint @relation(name:"SCHEDULED_FOR", direction:OUT)
+    executedSprint: Sprint @relation(name:"EXECUTED_IN", direction:OUT)
     epic: Epic @relation(name:"FULFILLS", direction:OUT)
-    squad: Squad @relation(name:"WORKING_ON", direction:IN)
+    squad: Squad @relation(name:"ASSIGED_TO", direction:OUT)
 }
 
 enum Status {

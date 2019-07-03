@@ -2,9 +2,9 @@ FROM neo4j:latest
 
 USER root
 
-RUN apt-get update -y && \
-    apt-get install wget && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add wget && \
+    rm -rf /var/cache/apk/*
 
 USER neo4j
 

@@ -30,19 +30,19 @@ LOAD CSV WITH HEADERS FROM 'file:///squad_tpl.csv' AS row
 MATCH (p:Person), (sq:Squad)
 WHERE sq.squadID = row.squadID AND p.personID = row.personID
 CREATE (p)-[rel:TPL_OF]->(sq)
-SET rel.active = row.active, rel.startDate = date(row.startDate), rel.endDate = date(row.endDate);
+SET rel.active = toBoolean(row.active), rel.startDate = date(row.startDate), rel.endDate = date(row.endDate);
 
 LOAD CSV WITH HEADERS FROM 'file:///squad_po.csv' AS row 
 MATCH (p:Person), (sq:Squad)
 WHERE sq.squadID = row.squadID AND p.personID = row.personID
 CREATE (p)-[rel:PO_OF]->(sq)
-SET rel.active = row.active, rel.startDate = date(row.startDate), rel.endDate = date(row.endDate);
+SET rel.active = toBoolean(row.active), rel.startDate = date(row.startDate), rel.endDate = date(row.endDate);
 
 LOAD CSV WITH HEADERS FROM 'file:///squad_members.csv' AS row 
 MATCH (p:Person), (sq:Squad)
 WHERE sq.squadID = row.squadID AND p.personID = row.personID
 CREATE (p)-[rel:MEMBER_OF]->(sq)
-SET rel.active = row.active, rel.startDate = date(row.startDate), rel.endDate = date(row.endDate), rel.allocation = toFloat(row.allocation), rel.roles = split(row.roles,";");
+SET rel.active = toBoolean(row.active), rel.startDate = date(row.startDate), rel.endDate = date(row.endDate), rel.allocation = toFloat(row.allocation), rel.roles = split(row.roles,";");
 
 MATCH (sq:Squad), (f:Focus)
 WHERE sq.focusID = f.focusID

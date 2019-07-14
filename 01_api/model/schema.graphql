@@ -13,6 +13,7 @@ type Squad {
     tags: [Tag] @relation(name:"TAGGED_AS", direction:OUT)
     locations: [Location] @cypher(statement:"MATCH (this)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(l:Location) RETURN DISTINCT l")
     stories: [Story] @relation(name:"ASSIGED_TO", direction:IN)
+    graphs: [SquadGraph]
 }
 
 type Focus {
@@ -198,6 +199,15 @@ enum Status {
 #     repo: Repository @cypher(statement:"MATCH (r:Repository)<-[:BRANCH_OF]-(:Branch)<-[:CHANGES_FROM]-(this) RETURN DISTINCT r")
 # }
 
+# Graph
+type Graph {
+    graphID: ID!
+    name: String! 
+    version: String
+    description: String
+    squad: [SquadGraph]
+}
+
 # Types and Enums End
 
 # Relationships Start
@@ -226,6 +236,32 @@ type SquadMembers @relation(name:"MEMBER_OF") {
     active: Boolean
     startDate: Date
     endDate: Date
+}
+
+type SquadGraph @relation(name:"ANALYSED_ON") {
+    # Example: 
+    #     values: [1,2,3,4,5,6,7,8]
+    #     valuesMask: [1,1,1,0,0,1,0,1]
+    #     coordinates: ['sprint1', 'sprint2', 'code_impact', 'code_contrib', 'bowen', 'sherry']
+    #     valuesShape: [2,2,2] 
+    #     
+    # Get actual values: 
+    #     1. apply mask: [1,2,3,4,5,6,7,8] -> [1,2,3,null,null,6,null,8]
+    #     2. apply shape: [[1,2],[3,null]],[[null,6],[null,8]]]
+    #     3. coordinates map: [['sprint_1', 'sprint_2'], ['code_impact', 'code_contrib'], ['bowen', 'sherry']] 
+    #     explaination: [[1,2],[3,null]] is 'sprint1' result, [1,2] is 'code_impact' value metrics, 1 is 'code impact' value for 'bowen'
+    from: Squad 
+    to: Graph
+    upToDate: Boolean
+    analyseDate: Date
+    # Add piNumber just for easy of use, otherwise can retrieve PI info by analyseDate
+    piNumber: Int
+    # Start graph data
+    values: [Float]
+    valuesMask: [Boolean]
+    coordinates: [String]
+    valuesShape: [Int]
+    additionalInfo: [String]
 }
 
 # Relationships End

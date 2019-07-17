@@ -12,7 +12,7 @@ type Squad {
     badges: [Badge] @relation(name:"ACHIEVED", direction:OUT)
     tags: [Tag] @relation(name:"TAGGED_AS", direction:OUT)
     locations: [Location] @cypher(statement:"MATCH (this)<-[:MEMBER_OF]-(:Person)-[:BASED_IN]->(l:Location) RETURN DISTINCT l")
-    stories: [Story] @relation(name:"ASSIGED_TO", direction:IN)
+    epics: [Epic] @relation(name:"ASSIGNED_TO", direction:IN)
     graphs: [SquadGraph]
 }
 
@@ -41,6 +41,7 @@ type Person {
     totalAllocation: Float @cypher(statement:"MATCH (this)-[m:MEMBER_OF]->(:Squad) RETURN SUM(m.allocation)")
     badges:[Badge] @relation(name:"ACHIEVED", direction:OUT)
     organisation: Organisation @relation(name:"EMPLOYEE_OF", direction:OUT)
+    stories: [Story] @relation(name:"ASSIGNED_PERSON", direction:IN)
     # commits: [Commit] @relation(name:"PERFORMED", direction:OUT)
 }
 
@@ -108,7 +109,7 @@ type Sprint {
     isCurrent: Boolean!
     startDate: Date!
     endDate: Date
-    programIncrement: ProgramIncrement! @relation(name:"TOWARDS", direction:ON)
+    programIncrement: ProgramIncrement! @relation(name:"TOWARDS", direction:OUT)
     scheduledStories: [Story] @relation(name:"SCHEDULED_FOR", direction:IN)
     executedStories: [Story] @relation(name:"EXECUTED_IN", direction:IN)
 }
@@ -130,23 +131,40 @@ type Epic {
     stories: [Story] @relation(name:"FULFILLS", direction:IN)
     dependedOn: [Epic] @relation(name:"DEPENDED_ON", direction:OUT)
     dependedBy: [Epic] @relation(name:"DEPENDED_ON", direction:IN)
+    squad: Squad @relation(name:"ASSIGNED_TO", direction: OUT)
 }
 
 type Story {
     storyID: ID!
     jiraID: String!
     status: Status!
+    storyType: StoryType!
     scheduledSprint: Sprint @relation(name:"SCHEDULED_FOR", direction:OUT)
     executedSprint: Sprint @relation(name:"EXECUTED_IN", direction:OUT)
     epic: Epic @relation(name:"FULFILLS", direction:OUT)
-    squad: Squad @relation(name:"ASSIGED_TO", direction:OUT)
+    assignee: Person @relation(name:"ASSIGNED_PERSON", direction:OUT)
+    links: [StoryLink]
+}
+
+enum StoryType {
+    STORY
+    BUG
+    TEST
+    TASK
+    SUBTASK
+    UNKNOWN
 }
 
 enum Status {
-    INPROGRESS
-    COMPLETED
+    FUNNEL
+    WITHTEAM
     BACKLOG
-    OTHER
+    TODO
+    INPROGRESS
+    INREVIEW
+    INTESTING
+    COMPLETED
+    UNKNOWN
 }
 
 # git
@@ -236,6 +254,12 @@ type SquadMembers @relation(name:"MEMBER_OF") {
     active: Boolean
     startDate: Date
     endDate: Date
+}
+
+type StoryLink @relation(name:"LINKED_TO") {
+    from: Story
+    to: Story
+    type: String
 }
 
 type SquadGraph @relation(name:"ANALYSED_ON") {

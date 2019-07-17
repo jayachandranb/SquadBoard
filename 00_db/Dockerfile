@@ -3,7 +3,7 @@ FROM neo4j:latest
 USER root
 
 RUN apt-get update -y && \
-    apt-get install wget && \
+    apt-get install wget -y && \
     rm -rf /var/lib/apt/lists/*
 
 USER neo4j

@@ -223,7 +223,7 @@ type Graph {
     name: String! 
     version: String
     description: String
-    squad: [SquadGraph]
+    squads: [SquadGraph]
 }
 
 # Types and Enums End
